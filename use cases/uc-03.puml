@@ -1,0 +1,136 @@
+
+@startuml
+
+left to right direction
+
+actor "Организатор" as Organizer
+actor "Архитектор" as Architect
+actor "Химик" as Chemist
+actor "Имперсонатор" as Impersonator
+actor "Заказчик" as Customer
+
+rectangle "Inception Operation System" {
+
+    usecase "Планировать операцию" as UC_Planning
+
+    package "Начало планирования" {
+        usecase "Начать планирование" as UC_StartPlanning
+        usecase "Перевести операцию\nв статус «Планирование»" as UC_SetPlanningStatus
+        usecase "Уведомить участников\nи заказчика" as UC_NotifyStart
+        usecase "Записать начало\nпланирования в журнал" as UC_LogStart
+    }
+
+    package "Архитектура сна" {
+        usecase "Спроектировать\nархитектуру сна" as UC_Architecture
+        usecase "Добавить уровень сна" as UC_AddLevel
+        usecase "Указать сведения\nоб уровне" as UC_LevelData
+        usecase "Назначить участников\nуровня" as UC_LevelParticipants
+        usecase "Добавить ключевые\nсобытия" as UC_KeyEvents
+        usecase "Связать уровни сна" as UC_LinkLevels
+        usecase "Проверить структуру\nсна" as UC_CheckArchitecture
+        usecase "Зафиксировать\nархитектуру сна" as UC_FixArchitecture
+        usecase "Уведомить о фиксации\nархитектуры" as UC_NotifyArchitecture
+    }
+
+    package "Параметры седации" {
+        usecase "Настроить параметры\nседации" as UC_Sedation
+        usecase "Выбрать уровень\nи участника" as UC_SelectSedationTarget
+        usecase "Указать препарат,\nдозировку и длительность" as UC_SedationData
+        usecase "Вычислить время\nпогружения" as UC_CalculateTime
+        usecase "Рассчитать расписание\nкиков" as UC_CalculateKicks
+        usecase "Проверить риск\nрассинхронизации" as UC_CheckDesync
+        usecase "Зафиксировать параметры\nседации" as UC_FixSedation
+    }
+
+    package "Сценарии взаимодействия" {
+        usecase "Создать сценарии\nвзаимодействия" as UC_Scenarios
+        usecase "Добавить сценарий" as UC_AddScenario
+        usecase "Указать сведения\nо сценарии" as UC_ScenarioData
+        usecase "Связать сценарий\nс уровнем сна" as UC_LinkScenario
+        usecase "Зафиксировать\nсценарии" as UC_FixScenarios
+    }
+
+    package "Завершение планирования" {
+        usecase "Проверить готовность\nплана операции" as UC_CheckReadiness
+        usecase "Просмотреть карточку\nоперации" as UC_ViewOperation
+        usecase "Зафиксировать операцию" as UC_FixOperation
+        usecase "Перевести операцию\nв статус\n«Готова к запуску»" as UC_SetReady
+        usecase "Ограничить изменение\nзафиксированных данных" as UC_LockData
+        usecase "Уведомить участников\nи заказчика" as UC_NotifyReady
+        usecase "Записать завершение\nпланирования в журнал" as UC_LogFinish
+    }
+
+    package "Альтернативные ситуации" {
+        usecase "Сообщить о незаполненных\nпараметрах уровня" as UC_LevelError
+        usecase "Сообщить о конфликте\nструктуры сна" as UC_ArchitectureConflict
+        usecase "Запретить изменение\nактивной операции" as UC_ActiveOperation
+        usecase "Сообщить о некорректных\nпараметрах седации" as UC_SedationError
+        usecase "Предупредить о риске\nрассинхронизации" as UC_DesyncWarning
+        usecase "Сообщить о незаполненных\nпараметрах сценария" as UC_ScenarioError
+        usecase "Сформировать список\nзамечаний" as UC_ReadinessErrors
+    }
+}
+
+Organizer --> UC_Planning
+Organizer --> UC_ViewOperation
+Organizer --> UC_FixOperation
+
+Architect --> UC_Architecture
+Chemist --> UC_Sedation
+Impersonator --> UC_Scenarios
+
+Customer --> UC_NotifyStart
+Customer --> UC_NotifyReady
+
+UC_Planning ..> UC_StartPlanning : <<include>>
+UC_Planning ..> UC_Architecture : <<include>>
+UC_Planning ..> UC_Sedation : <<include>>
+UC_Planning ..> UC_Scenarios : <<include>>
+UC_Planning ..> UC_CheckReadiness : <<include>>
+UC_Planning ..> UC_ViewOperation : <<include>>
+UC_Planning ..> UC_FixOperation : <<include>>
+
+UC_StartPlanning ..> UC_SetPlanningStatus : <<include>>
+UC_StartPlanning ..> UC_NotifyStart : <<include>>
+UC_StartPlanning ..> UC_LogStart : <<include>>
+
+UC_Architecture ..> UC_AddLevel : <<include>>
+UC_Architecture ..> UC_LinkLevels : <<include>>
+UC_Architecture ..> UC_CheckArchitecture : <<include>>
+UC_Architecture ..> UC_FixArchitecture : <<include>>
+
+UC_AddLevel ..> UC_LevelData : <<include>>
+UC_AddLevel ..> UC_LevelParticipants : <<include>>
+UC_AddLevel ..> UC_KeyEvents : <<include>>
+
+UC_FixArchitecture ..> UC_NotifyArchitecture : <<include>>
+
+UC_Sedation ..> UC_SelectSedationTarget : <<include>>
+UC_Sedation ..> UC_SedationData : <<include>>
+UC_Sedation ..> UC_CalculateTime : <<include>>
+UC_Sedation ..> UC_CalculateKicks : <<include>>
+UC_Sedation ..> UC_CheckDesync : <<include>>
+UC_Sedation ..> UC_FixSedation : <<include>>
+
+UC_Scenarios ..> UC_AddScenario : <<include>>
+UC_Scenarios ..> UC_FixScenarios : <<include>>
+
+UC_AddScenario ..> UC_ScenarioData : <<include>>
+UC_AddScenario ..> UC_LinkScenario : <<include>>
+
+UC_FixOperation ..> UC_SetReady : <<include>>
+UC_FixOperation ..> UC_LockData : <<include>>
+UC_FixOperation ..> UC_NotifyReady : <<include>>
+UC_FixOperation ..> UC_LogFinish : <<include>>
+
+UC_AddLevel <.. UC_LevelError : <<extend>>
+UC_CheckArchitecture <.. UC_ArchitectureConflict : <<extend>>
+UC_Planning <.. UC_ActiveOperation : <<extend>>
+UC_SedationData <.. UC_SedationError : <<extend>>
+UC_CheckDesync <.. UC_DesyncWarning : <<extend>>
+UC_AddScenario <.. UC_ScenarioError : <<extend>>
+UC_CheckReadiness <.. UC_ReadinessErrors : <<extend>>
+
+
+@enduml
+

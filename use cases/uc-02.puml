@@ -1,0 +1,81 @@
+
+@startuml
+
+left to right direction
+
+actor "Организатор" as Organizer
+actor "Заказчик" as Customer
+actor "Участник операции" as Participant
+
+rectangle "Inception Operation System" {
+
+    usecase "Создать операцию" as UC_CreateOperation
+
+    package "Рассмотрение заявки" {
+        usecase "Просмотреть заявку" as UC_ViewRequest
+        usecase "Проверить сведения\nзаявки" as UC_CheckRequest
+        usecase "Принять решение\nо проведении операции" as UC_Decide
+    }
+
+    package "Формирование команды" {
+        usecase "Перейти к списку\nучастников" as UC_OpenParticipants
+        usecase "Добавить участника" as UC_AddParticipant
+        usecase "Найти пользователя\nпо логину" as UC_FindUser
+        usecase "Назначить роль" as UC_AssignRole
+        usecase "Проверить состав\nкоманды" as UC_CheckTeam
+    }
+
+    package "Создание операции" {
+        usecase "Перенести данные\nиз заявки" as UC_CopyData
+        usecase "Сохранить операцию" as UC_SaveOperation
+        usecase "Перевести операцию\nв статус «В работе»" as UC_SetStatus
+        usecase "Отобразить участников\nв карточке операции" as UC_ShowParticipants
+        usecase "Уведомить заказчика" as UC_NotifyCustomer
+        usecase "Уведомить участников" as UC_NotifyParticipants
+        usecase "Записать действия\nв журнал событий" as UC_Log
+    }
+
+    package "Альтернативные ситуации" {
+        usecase "Отклонить заявку" as UC_RejectRequest
+        usecase "Указать причину\nотклонения" as UC_RejectReason
+        usecase "Перевести заявку\nв статус «Отклонена»" as UC_SetRejected
+
+        usecase "Сообщить, что\nпользователь не найден" as UC_UserNotFound
+        usecase "Сообщить о\nдублировании участника" as UC_Duplicate
+        usecase "Обработать ошибку\nсохранения операции" as UC_SaveError
+    }
+}
+
+Organizer --> UC_CreateOperation
+Customer --> UC_NotifyCustomer
+Participant --> UC_NotifyParticipants
+
+UC_CreateOperation ..> UC_ViewRequest : <<include>>
+UC_CreateOperation ..> UC_CheckRequest : <<include>>
+UC_CreateOperation ..> UC_Decide : <<include>>
+UC_CreateOperation ..> UC_OpenParticipants : <<include>>
+UC_CreateOperation ..> UC_CheckTeam : <<include>>
+UC_CreateOperation ..> UC_CopyData : <<include>>
+UC_CreateOperation ..> UC_SaveOperation : <<include>>
+UC_CreateOperation ..> UC_SetStatus : <<include>>
+UC_CreateOperation ..> UC_ShowParticipants : <<include>>
+UC_CreateOperation ..> UC_NotifyCustomer : <<include>>
+UC_CreateOperation ..> UC_NotifyParticipants : <<include>>
+UC_CreateOperation ..> UC_Log : <<include>>
+
+UC_OpenParticipants ..> UC_AddParticipant : <<include>>
+UC_AddParticipant ..> UC_FindUser : <<include>>
+UC_AddParticipant ..> UC_AssignRole : <<include>>
+
+UC_Decide <.. UC_RejectRequest : <<extend>>
+UC_RejectRequest ..> UC_RejectReason : <<include>>
+UC_RejectRequest ..> UC_SetRejected : <<include>>
+UC_RejectRequest ..> UC_NotifyCustomer : <<include>>
+UC_RejectRequest ..> UC_Log : <<include>>
+
+UC_FindUser <.. UC_UserNotFound : <<extend>>
+UC_AddParticipant <.. UC_Duplicate : <<extend>>
+UC_SaveOperation <.. UC_SaveError : <<extend>>
+
+@enduml
+

@@ -1,0 +1,143 @@
+@startuml
+
+
+left to right direction
+
+
+actor "Организатор" as Organizer
+actor "Химик" as Chemist
+actor "Архитектор" as Architect
+actor "Имперсонатор" as Impersonator
+actor "Извлекатель" as Extractor
+actor "Устройство PASIV" as PASIV
+
+rectangle "Inception Operation System" {
+
+    usecase "Запустить операцию" as UC_Launch
+
+    package "Подготовка к запуску" {
+        usecase "Подготовить операцию\nк запуску" as UC_Prepare
+        usecase "Проверить статус\nоперации" as UC_CheckStatus
+        usecase "Уведомить участников\nо начале операции" as UC_Notify
+        usecase "Записать начало подготовки\nв журнал событий" as UC_LogPreparation
+    }
+
+    package "Подключение участников" {
+        usecase "Подключить участников\nк PASIV" as UC_Connect
+        usecase "Получить сведения\nот PASIV" as UC_GetPASIVData
+        usecase "Сопоставить подключённых\nучастников с командой" as UC_MatchParticipants
+        usecase "Отобразить состояние\nучастников" as UC_ShowState
+        usecase "Начать мониторинг\nсостояния участников" as UC_Monitor
+    }
+
+    package "Подтверждение седации" {
+        usecase "Проверить состояние\nучастников" as UC_CheckParticipants
+        usecase "Подтвердить готовность\nкаждого участника" as UC_ConfirmParticipants
+        usecase "Подтвердить готовность\nк седации" as UC_ConfirmSedation
+    }
+
+    package "Подтверждение запуска" {
+        usecase "Проверить готовность\nоперации к запуску" as UC_CheckReadiness
+        usecase "Проверить подключение\nвсех участников" as UC_CheckConnections
+        usecase "Проверить подтверждение\nхимика" as UC_CheckChemist
+        usecase "Проверить доступность\nPASIV" as UC_CheckPASIV
+
+        usecase "Показать окно\nподтверждения запуска" as UC_ShowConfirmation
+        usecase "Отобразить сведения\nоб операции" as UC_ShowOperationInfo
+        usecase "Подтвердить запуск" as UC_ConfirmLaunch
+    }
+
+    package "Начало погружения" {
+        usecase "Передать PASIV команду\nна начало погружения" as UC_SendCommand
+        usecase "Получить подтверждение\nкоманды от PASIV" as UC_GetConfirmation
+
+        usecase "Запустить общий таймер\nоперации" as UC_StartMainTimer
+        usecase "Запустить таймер\nдействия седации" as UC_StartSedationTimer
+        usecase "Запустить таймеры\nуровней сна" as UC_StartLevelTimers
+        usecase "Активировать расписание\nкиков" as UC_StartKicks
+        usecase "Активировать контроль\nрассинхронизации" as UC_StartDesyncControl
+
+        usecase "Перевести операцию\nв статус «Активна»" as UC_SetActive
+        usecase "Ограничить редактирование\nключевых данных" as UC_LockData
+        usecase "Записать запуск\nв журнал событий" as UC_LogLaunch
+    }
+
+    package "Альтернативные ситуации" {
+        usecase "Сообщить об отсутствующем\nучастнике" as UC_MissingParticipant
+        usecase "Заблокировать запуск" as UC_BlockLaunch
+
+        usecase "Отклонить готовность\nк седации" as UC_RejectSedation
+        usecase "Указать причину отказа" as UC_RejectReason
+        usecase "Вернуть операцию\nна планирование" as UC_ReturnPlanning
+
+        usecase "Отменить запуск" as UC_CancelLaunch
+        usecase "Сохранить статус\n«Готова к запуску»" as UC_KeepReadyStatus
+    }
+}
+
+Organizer --> UC_Launch
+Organizer --> UC_ConfirmLaunch
+
+Chemist --> UC_Connect
+Chemist --> UC_CheckParticipants
+Chemist --> UC_ConfirmParticipants
+Chemist --> UC_ConfirmSedation
+
+Architect --> UC_Notify
+Impersonator --> UC_Notify
+Extractor --> UC_Notify
+
+PASIV --> UC_GetPASIVData
+PASIV --> UC_GetConfirmation
+
+UC_Launch ..> UC_Prepare : <<include>>
+UC_Launch ..> UC_Connect : <<include>>
+UC_Launch ..> UC_CheckParticipants : <<include>>
+UC_Launch ..> UC_ConfirmSedation : <<include>>
+UC_Launch ..> UC_CheckReadiness : <<include>>
+UC_Launch ..> UC_ShowConfirmation : <<include>>
+UC_Launch ..> UC_ConfirmLaunch : <<include>>
+UC_Launch ..> UC_SendCommand : <<include>>
+UC_Launch ..> UC_SetActive : <<include>>
+UC_Launch ..> UC_LockData : <<include>>
+UC_Launch ..> UC_LogLaunch : <<include>>
+
+UC_Prepare ..> UC_CheckStatus : <<include>>
+UC_Prepare ..> UC_Notify : <<include>>
+UC_Prepare ..> UC_LogPreparation : <<include>>
+
+UC_Connect ..> UC_GetPASIVData : <<include>>
+UC_GetPASIVData ..> UC_MatchParticipants : <<include>>
+UC_GetPASIVData ..> UC_ShowState : <<include>>
+UC_Connect ..> UC_Monitor : <<include>>
+
+UC_CheckParticipants ..> UC_ShowState : <<include>>
+UC_ConfirmSedation ..> UC_ConfirmParticipants : <<include>>
+
+UC_CheckReadiness ..> UC_CheckConnections : <<include>>
+UC_CheckReadiness ..> UC_CheckChemist : <<include>>
+UC_CheckReadiness ..> UC_CheckPASIV : <<include>>
+
+UC_ShowConfirmation ..> UC_ShowOperationInfo : <<include>>
+
+UC_SendCommand ..> UC_GetConfirmation : <<include>>
+UC_SendCommand ..> UC_StartMainTimer : <<include>>
+UC_SendCommand ..> UC_StartSedationTimer : <<include>>
+UC_SendCommand ..> UC_StartLevelTimers : <<include>>
+UC_SendCommand ..> UC_StartKicks : <<include>>
+UC_SendCommand ..> UC_Monitor : <<include>>
+UC_SendCommand ..> UC_StartDesyncControl : <<include>>
+
+UC_CheckConnections <.. UC_MissingParticipant : <<extend>>
+UC_MissingParticipant ..> UC_BlockLaunch : <<include>>
+
+UC_ConfirmSedation <.. UC_RejectSedation : <<extend>>
+UC_RejectSedation ..> UC_RejectReason : <<include>>
+UC_RejectSedation ..> UC_BlockLaunch : <<include>>
+UC_RejectSedation ..> UC_ReturnPlanning : <<include>>
+
+UC_ConfirmLaunch <.. UC_CancelLaunch : <<extend>>
+UC_CancelLaunch ..> UC_KeepReadyStatus : <<include>>
+
+@enduml
+

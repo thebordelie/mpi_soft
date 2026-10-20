@@ -1,0 +1,64 @@
+
+@startuml
+title Создание заявки на проведение операции
+
+left to right direction
+
+actor "Заказчик" as Customer
+actor "Организатор" as Organizer
+
+rectangle "Inception Operation System" {
+
+    usecase "Создать заявку\nна проведение операции" as UC_Create
+
+    package "Заполнение заявки" {
+        usecase "Указать общие сведения" as UC_General
+        usecase "Указать сведения\nоб объекте воздействия" as UC_Target
+        usecase "Выбрать цель операции" as UC_Goal
+        usecase "Указать ожидаемый\nрезультат" as UC_Result
+        usecase "Указать критерии\nуспеха" as UC_Criteria
+        usecase "Выбрать организатора" as UC_Organizer
+    }
+
+    package "Отправка заявки" {
+        usecase "Отправить заявку" as UC_Send
+        usecase "Проверить обязательные\nполя" as UC_Validate
+        usecase "Сохранить заявку" as UC_Save
+        usecase "Перевести заявку\nв статус\n«На рассмотрении»" as UC_Status
+        usecase "Уведомить организатора" as UC_Notify
+        usecase "Записать действие\nв журнал событий" as UC_Log
+    }
+
+    package "Альтернативные ситуации" {
+        usecase "Сообщить о незаполненных\nобязательных полях" as UC_RequiredError
+        usecase "Сохранить заявку\nкак черновик" as UC_Draft
+        usecase "Обработать ошибку\nсохранения" as UC_SaveError
+        usecase "Сохранить введённые\nданные в форме" as UC_PreserveData
+    }
+}
+
+Customer --> UC_Create
+Organizer --> UC_Notify
+
+UC_Create ..> UC_General : <<include>>
+UC_Create ..> UC_Target : <<include>>
+UC_Create ..> UC_Goal : <<include>>
+UC_Create ..> UC_Result : <<include>>
+UC_Create ..> UC_Criteria : <<include>>
+UC_Create ..> UC_Organizer : <<include>>
+UC_Create ..> UC_Send : <<include>>
+
+UC_Send ..> UC_Validate : <<include>>
+UC_Send ..> UC_Save : <<include>>
+UC_Send ..> UC_Status : <<include>>
+UC_Send ..> UC_Notify : <<include>>
+UC_Send ..> UC_Log : <<include>>
+
+UC_Validate <.. UC_RequiredError : <<extend>>
+UC_RequiredError ..> UC_Draft : <<include>>
+
+UC_Save <.. UC_SaveError : <<extend>>
+UC_SaveError ..> UC_PreserveData : <<include>>
+
+
+@enduml
